@@ -61,7 +61,7 @@
   /////////////////////////////////
   // Click event on map polygons
   polygonSeries.mapPolygons.template.events.on("click", function (ev) {
-    var countryName = ev.target.dataItem.dataContext.name;
+    var countryCode = ev.target.dataItem.dataContext.id;
 
     // Send data to the server
     fetch("/country", {
@@ -69,7 +69,7 @@
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ country: countryName }),
+      body: JSON.stringify({ country: countryCode }),
     })
       .then((response) => {
         if (response.redirected) {
