@@ -2,52 +2,107 @@
 <html lang="en">
   <head>
     <%- include("partials/head.ejs") %>
+    <script>
+      function updateTime() {
+        let time1 = "<%= formattedTime1 %>";
+        let time2 = "<%= formattedTime2 %>";
+
+        if (!time1 || !time2) {
+          console.error("Invalid time format:", time1, time2);
+          return;
+        }
+
+        let [hours1, minutes1, seconds1] = time1.split(":").map(Number);
+        let [hours2, minutes2, seconds2] = time2.split(":").map(Number);
+
+        if (isNaN(seconds1)) {
+          seconds1 = 0;
+        }
+        if (isNaN(seconds2)) {
+          seconds2 = 0;
+        }
+
+        setInterval(() => {
+          seconds1++;
+          seconds2++;
+
+          if (seconds1 === 60) {
+            seconds1 = 0;
+            minutes1++;
+          }
+          if (seconds2 === 60) {
+            seconds2 = 0;
+            minutes2++;
+          }
+
+          if (minutes1 === 60) {
+            minutes1 = 0;
+            hours1++;
+          }
+          if (minutes2 === 60) {
+            minutes2 = 0;
+            hours2++;
+          }
+
+          const newTime1 = `${String(hours1).padStart(2, "0")}:${String(
+            minutes1
+          ).padStart(2, "0")}:${String(seconds1).padStart(2, "0")}`;
+          const newTime2 = `${String(hours2).padStart(2, "0")}:${String(
+            minutes2
+          ).padStart(2, "0")}:${String(seconds2).padStart(2, "0")}`;
+
+          document.getElementById("time1").textContent = newTime1;
+          document.getElementById("time2").textContent = newTime2;
+        }, 1000);
+      }
+
+      window.onload = updateTime;
+    </script>
   </head>
   <body>
     <%- include("partials/menu.ejs") %>
-    <main>
-      <section class="select_section">
-        <form id="country_form" method="GET" action="/timezone">
-          <label for="country_select1">Country 1:</label>
-          <select name="countryId1" id="country_select1">
-            <% regions.forEach(region => { %>
-            <option value="<%= region %>"><%= region.split('/')[1] %></option>
-            <% }) %>
-          </select>
+    <main class="landscape_main">
+      <h1>Time Zones</h1>
+      <section class="timezone_section">
+        <form id="timezone_form" method="GET" action="/timezone">
+          <div class="select_box">
+            <select name="countryId1" id="country_select1">
+              <% regions.forEach(region => { %>
+              <option value="<%= region %>"><%= region.split('/')[1] %></option>
+              <% }) %>
+            </select>
 
-          <label for="country_select2">Country 2:</label>
-          <select name="countryId2" id="country_select2">
-            <% regions.forEach(region => { %>
-            <option value="<%= region %>"><%= region.split('/')[1] %></option>
-            <% }) %>
-          </select>
-
-          <button type="submit">Go</button>
+            <select name="countryId2" id="country_select2">
+              <% regions.forEach(region => { %>
+              <option value="<%= region %>"><%= region.split('/')[1] %></option>
+              <% }) %>
+            </select>
+          </div>
+          <button type="submit" class="timezone_button">Go</button>
         </form>
       </section>
-      <section class="timezone1">
-        <p><strong>Current Time:</strong> <%= timeData1.datetime %></p>
-        <p>
-          <strong>Date:</strong> <%= new
-          Date(timeData1.datetime).toLocaleDateString() %>
-        </p>
-        <p>
-          <strong>Day of the Week:</strong> <%= ['Sunday', 'Monday', 'Tuesday',
-          'Wednesday', 'Thursday', 'Friday', 'Saturday'][timeData1.day_of_week]
-          %>
-        </p>
-      </section>
-      <section class="timezone2">
-        <p><strong>Current Time:</strong> <%= timeData2.datetime %></p>
-        <p>
-          <strong>Date:</strong> <%= new
-          Date(timeData2.datetime).toLocaleDateString() %>
-        </p>
-        <p>
-          <strong>Day of the Week:</strong> <%= ['Sunday', 'Monday', 'Tuesday',
-          'Wednesday', 'Thursday', 'Friday', 'Saturday'][timeData2.day_of_week]
-          %>
-        </p>
+      <section class="timezone_result">
+        <div class="timezone1">
+          <p class="small_font">UTC<%= utcOffset1 %></p>
+          <p id="time1" class="large_font"><%= formattedTime1 %></p>
+          <p class="small_font">
+            <%= localDate1 %> <%= ['Sunday', 'Monday', 'Tuesday', 'Wednesday',
+            'Thursday', 'Friday', 'Saturday'][timeData1.day_of_week] %>
+          </p>
+        </div>
+        <div class="timeDiff">
+          <p>
+            <strong>Time Difference:</strong><br /><%= timeDifference %> hours
+          </p>
+        </div>
+        <div class="timezone2">
+          <p class="small_font">UTC<%= utcOffset2 %></p>
+          <p id="time2" class="large_font"><%= formattedTime2 %></p>
+          <p class="small_font">
+            <%= localDate2 %> <%= ['Sunday', 'Monday', 'Tuesday', 'Wednesday',
+            'Thursday', 'Friday', 'Saturday'][timeData2.day_of_week] %>
+          </p>
+        </div>
       </section>
     </main>
     <%- include("partials/footer.ejs") %>
@@ -66,7 +121,7 @@
           select2.value = countryId2;
         }
 
-        const form = document.getElementById("country_form");
+        const form = document.getElementById("timezone_form");
         form.addEventListener("submit", function (event) {
           event.preventDefault();
 

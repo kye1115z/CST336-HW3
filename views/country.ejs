@@ -18,42 +18,37 @@
             <option value="<%= country.cca2 %>"><%= country.name %></option>
             <% }) %>
           </select>
-          <button type="submit">Go</button>
+          <button type="submit">Search</button>
         </form>
       </section>
       <section class="info_section">
-        <h2>Country Information</h2>
-        <div>
-          <h3>
-            <%= countryDetails.name %>
-            <img
-              src="<%= countryDetails.flag %>"
-              alt="Flag"
-              style="width: 50px"
-            />
-          </h3>
-          <p><strong>Capital:</strong> <%= countryDetails.capital %></p>
-          <p>
-            <strong>Area:</strong> <%= countryDetails.area.toLocaleString() %>
-            km²
-          </p>
-          <p>
-            <strong>Population:</strong> <%=
-            countryDetails.population.toLocaleString() %>
-          </p>
-          <p><strong>Languages:</strong> <%= countryDetails.languages %></p>
-          <p><strong>Currencies:</strong> <%= countryDetails.currencies %></p>
-          <p>
-            <strong>Maps:</strong>
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d13124457.20328561!2d30.7176466!3d15.6884928!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x15db8f9e2bcce7d5%3A0x4098c583754de60b!2sSudan!5e0!3m2!1sen!2sus!4v1602935125288!5m2!1sen!2sus"
-              width="600"
-              height="450"
-              style="border: 0"
-              allowfullscreen=""
-              loading="lazy"
-            ></iframe>
-          </p>
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d13124457.20328561!2d30.7176466!3d15.6884928!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x15db8f9e2bcce7d5%3A0x4098c583754de60b!2sSudan!5e0!3m2!1sen!2sus!4v1602935125288!5m2!1sen!2sus"
+          width="50%"
+          height="300"
+          style="border: 0"
+          allowfullscreen=""
+          loading="lazy"
+        ></iframe>
+        <div class="info_bottom">
+          <img
+            src="<%= countryDetails.flag %>"
+            alt="Flag"
+            style="width: 300px"
+          />
+          <div>
+            <p><strong>Capital:</strong> <%= countryDetails.capital %></p>
+            <p>
+              <strong>Area:</strong> <%= countryDetails.area.toLocaleString() %>
+              km²
+            </p>
+            <p>
+              <strong>Population:</strong> <%=
+              countryDetails.population.toLocaleString() %>
+            </p>
+            <p><strong>Languages:</strong> <%= countryDetails.languages %></p>
+            <p><strong>Currencies:</strong> <%= countryDetails.currencies %></p>
+          </div>
         </div>
       </section>
     </main>

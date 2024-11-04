@@ -1,6 +1,8 @@
 import express from "express";
 import fetch from "node-fetch";
-const UNSPLASH_ACCESS_KEY = `IP3YrvvEH2-W5bVR8T6fRTMmCIY9kDrvoTSgeQFtTCk`;
+import { calculateTimeDifference } from "./timeUtils.mjs";
+
+const UNSPLASH_ACCESS_KEY = `wSRuTGtsXXRrcqNaqhl-TT0ZoB2v6HfmVNZBzdu_IDo`;
 
 const app = express();
 
@@ -77,12 +79,32 @@ app.get("/timezone", async (req, res) => {
   const countryId2 = req.query.countryId2 || "Asia/Seoul";
 
   try {
-    const timeData1 = await fetch(
-      `http://worldtimeapi.org/api/timezone/${countryId1}`
-    ).then((res) => res.json());
-    const timeData2 = await fetch(
-      `http://worldtimeapi.org/api/timezone/${countryId2}`
-    ).then((res) => res.json());
+    const [timeData1, timeData2] = await Promise.all([
+      fetch(`http://worldtimeapi.org/api/timezone/${countryId1}`).then((res) =>
+        res.json()
+      ),
+      fetch(`http://worldtimeapi.org/api/timezone/${countryId2}`).then((res) =>
+        res.json()
+      ),
+    ]);
+
+    const utcOffset1 = timeData1.utc_offset;
+    const utcOffset2 = timeData2.utc_offset;
+
+    const timeDifference = calculateTimeDifference(utcOffset1, utcOffset2);
+
+    const date1 = new Date(timeData1.datetime);
+    const date2 = new Date(timeData2.datetime);
+
+    const localDate1 = new Date(
+      date1.getTime() + parseInt(utcOffset1) * 3600 * 1000
+    );
+    const localDate2 = new Date(
+      date2.getTime() + parseInt(utcOffset2) * 3600 * 1000
+    );
+
+    const formattedTime1 = date1.toTimeString().split(" ")[0];
+    const formattedTime2 = date2.toTimeString().split(" ")[0];
 
     const regions = await fetch("http://worldtimeapi.org/api/timezone").then(
       (res) => res.json()
@@ -92,8 +114,15 @@ app.get("/timezone", async (req, res) => {
       regions,
       countryId1,
       countryId2,
+      utcOffset1,
+      utcOffset2,
+      formattedTime1,
+      formattedTime2,
       timeData1,
       timeData2,
+      timeDifference,
+      localDate1: localDate1.toLocaleDateString(),
+      localDate2: localDate2.toLocaleDateString(),
     });
   } catch (error) {
     console.error("Error fetching timezone data:", error);
@@ -103,7 +132,7 @@ app.get("/timezone", async (req, res) => {
 
 app.get("/random-landscapes", async (req, res) => {
   const response = await fetch(
-    `https://api.unsplash.com/photos/random?count=3&query=landscape`,
+    `https://api.unsplash.com/photos/random?count=6&query=landscape`,
     {
       headers: {
         Authorization: `Client-ID ${UNSPLASH_ACCESS_KEY}`,
@@ -116,7 +145,7 @@ app.get("/random-landscapes", async (req, res) => {
   const images = data.map((image) => ({
     id: image.id,
     description: image.alt_description,
-    url: image.urls.regular,
+    url: image.urls.full,
   }));
 
   res.render("landscapes", { images });

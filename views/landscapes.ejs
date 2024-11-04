@@ -5,15 +5,14 @@
   </head>
   <body>
     <%- include("partials/menu.ejs") %>
-    <main>
-      <h1>Random Scenery</h1>
+    <main class="landscape_main">
+      <h1>Beautiful Landscapes</h1>
       <div class="scenery-gallery">
         <% images.forEach(image => { %>
-        <div class="scenery-item">
-          <figure>
-            <img src="<%= image.url %>" alt="Scenery" />
-          </figure>
-        </div>
+        <div
+          class="scenery-item"
+          style="background-image: url('<%= image.url %>')"
+        ></div>
         <% }) %>
       </div>
     </main>
