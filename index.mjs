@@ -5,9 +5,16 @@ const app = express();
 
 app.set("view engine", "ejs");
 app.use(express.static("public"));
+app.use(express.json());
 
 app.get("/", async (req, res) => {
   res.render("home");
+});
+
+app.post("/country", (req, res) => {
+  const countryName = req.body.country;
+  console.log("Country received: ", countryName);
+  res.redirect(`/country/${encodeURIComponent(countryName)}`);
 });
 
 app.listen(10040, () => {
